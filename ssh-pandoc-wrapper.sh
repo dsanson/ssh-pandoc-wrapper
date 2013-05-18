@@ -35,24 +35,12 @@ if [ ${#args[@]} -ge 2 ]; then
        opts=$(echo $opts | sed s/${args[$i]}//)
     done
 else
-# If not, then input is stdin
-    read line
-    input_text="$line"
-    while read line; do
-        input_text="$input_text\n$line"
-    done
+    input_files="-"
 fi
 
-if [ $input_files ]; then
-    if [ $pipe_output ]; then
-        cat $input_files | ssh $server "pandoc $opts"
-    else
-        cat $input_files | ssh $server "pandoc $opts; cat $output_file; rm $output_file" > $output_file
-    fi
+if [ $pipe_output ]; then
+    cat $input_files | ssh $server "pandoc $opts"
 else
-    if [ $pipe_output ]; then
-        echo "$input_text" | ssh $server "pandoc $opts"
-    else
-        cat "$input_text" | ssh $server "pandoc $opts; cat $output_file; rm $output_file" > $output_file
-    fi
+    cat $input_files | ssh $server "pandoc $opts; cat $output_file; rm $output_file" > $output_file
 fi
+
