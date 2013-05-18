@@ -18,6 +18,10 @@ You need to have access to pandoc over ssh. The script itself is written in bash
 
 This is a simple script. Make sure it is executable, and put it in your path. On my iPad, I've renamed it `pandoc`. That way, other tools that call pandoc will call it instead.
 
+## Configuration
+
+You need to set the value of `server` on line 3 of the script to the URL or ssh alias for your server. I have an alias for my server in ~/.ssh/config, so I set server to this alias.
+
 ## Local Files, Remote Files
 
 This script gets your local input file(s) piped into the remote copy of pandoc, and gets the output back to your local computer. It does not try to push other local stuff to the remote server. So local images and templates, for example, will not be sent to the server. 
