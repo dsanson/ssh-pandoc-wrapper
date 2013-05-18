@@ -21,9 +21,9 @@ will do the trick.
 Place `ssh-pandoc-wrapper.sh` in your path, make it executable, and rename it `pandoc`. Edit the `server` variable on line 3 to point to your ssh server.
 
 Now you have an ersatz local copy of pandoc. The script worries about
-passing local input to the remote server and getting remote output back.
-All other options are passed through to the copy of pandoc running on
-the remote server.
+passing local input to the remote server and getting remote output back,
+using the tricks described above. All other options are passed through
+to the copy of pandoc running on the remote server.
 
 All of these commands should work just as expected:
 
