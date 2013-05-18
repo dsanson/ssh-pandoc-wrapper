@@ -1,30 +1,36 @@
-## The Goal
+## The Problem and the Solution
 
-[Pandoc] is not always easy to install. If you have ssh access to a server that has pandoc installed, you can use pandoc over ssh. For example,
+[Pandoc] is not easy to install in every environment. One way to use pandoc without having it installed is to use a copy installed on a remote server over ssh. For example,
 
-    $ cat foo.markdown | ssh example.com "pandoc -t latex" > foo.tex
+    $ cat foo.markdown | ssh example.com "pandoc -t html"
 
-will pipe the content of your local file, `foo.markdown`, through the remote copy of pandoc, convert it to latex, and pipe the output into `foo.tex`.
+will pipe the content of your local file, `foo.markdown`, through the remote copy of pandoc, convert it to html, and return the output on standard out, where you can do what you want with it.
 
-There are two ways in which this is less than ideal. First, you need to pipe the local file using `cat`. You cannot just specify it on the command line in the usual way. Second, if the output format is binary, like pdf, docx, epub, or odt, you'll need to find a way to get the remote copy of the binary file onto your local system.
+Binary output (pdf, docx, odt, epub) is slightly more complicated, because pandoc will not pipe binary files to standard out,
 
-That is where `ssh-pandoc-wrapper` comes in. Feed the script standard pandoc options in the usual way. It will figure out what needs to be piped where, and how to get those binary files onto your local system. Think of it as an ersatz local installation of `pandoc`, that passes the real work off to the version of pandoc on the remote server.
+    $ cat foo.markdown | ssh example.com "pandoc -o foo.docx; cat foo.docx; rm foo.docx" > foo.docx
+
+`ssh-pandoc-wrapper.sh` makes all of this more convenient. It handles the task of piping input over ssh, passing options off to the remote copy of pandoc, and fetching a remote output file, if one is produced.
+
+Place the script in your path, and rename it `pandoc`. Edit the `server` variable on line 3 to point to your ssh server. Now you have an ersatz local copy of pandoc, that passes all the real work off the your remote server. For example, all of these commands should work just as expected:
+
+    $ pandoc foo.markdown -t html
+    $ cat foo.markdown bar.markdown | pandoc --numbered-sections > foobar.html
+    $ pandoc foo.markdown -o foo.docx
+
+The script worries about passing local input to the remote server and getting remote output back. All other options are passed through to the remote server. If you use options that reference additional files, like `--css`, `--template`, and `--bibliography`, those files need to be on the remote server. For example,
+
+    $ pandoc foo.markdown --bibliography=papers.bib -o foo.html
+
+will only work if `papers.bib` is in the remote working directory.
 
 ## Requirements
 
-You need to have access to pandoc over ssh. The script itself is written in bash, and should not introduce any additional requirements. My intent is that it be usable on any POSIX system. My own use cases: a jailbroken iPad and a Raspberry Pi.
+You need to have access to pandoc over ssh. The script itself is written in bash.
 
 ## Installation
 
-This is a simple script. Make sure it is executable, and put it in your path. On my iPad, I've renamed it `pandoc`. That way, other tools that call pandoc will call it instead.
-
-## Configuration
-
-You need to set the value of `server` on line 3 of the script to the URL or ssh alias for your server. I have an alias for my server in ~/.ssh/config, so I set server to this alias.
-
-## Local Files, Remote Files
-
-This script gets your local input file(s) piped into the remote copy of pandoc, and gets the output back to your local computer. It does not try to push other local stuff to the remote server. So local images and templates, for example, will not be sent to the server. 
+Make the script executable, put it in your path, rename it `pandoc`. Edit line 3 with your ssh server information.
 
 [pandoc]: http://www.johnmacfarlane.net/pandoc/
 

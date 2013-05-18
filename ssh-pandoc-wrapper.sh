@@ -1,19 +1,33 @@
 #!/bin/sh
-# Change this to the URL or alias of your ssh server:
-server=example.com
+# 
+server=user@example.com
+# If you have a host configured in ~/.ssh/config, you can set server
+# to the alias instead.
+
+# Is the server variable configured?
+if [ "$server" == 'user@example.com' ]; then
+    echo "Script not configured:"
+    echo "    edit line 3 of $0"
+    exit
+fi
 
 opts="$@"
 
 # Get some information about the input and output files
 args=($(pandoc --dump-args $@))
+
 # Information about the output
 output_file=${args[0]}
+
+# Are we piping to stdout?
 if [ $output_file == "-" ]; then
    pipe_output=true
 fi
-# information about the input
+
+# Information about the input
+
+# Were input files specified on the command line?
 if [ ${#args[@]} -ge 2 ]; then
-    # We have input files
     input_files=""
     for (( i=1; i<${#args[@]}; i++ ));
     do
@@ -21,7 +35,7 @@ if [ ${#args[@]} -ge 2 ]; then
        opts=$(echo $opts | sed s/${args[$i]}//)
     done
 else
-    # input is from STDIN
+# If not, then input is stdin
     read line
     input_text="$line"
     while read line; do
@@ -29,7 +43,6 @@ else
     done
 fi
 
-# Let's get to work
 if [ $input_files ]; then
     if [ $pipe_output ]; then
         cat $input_files | ssh $server "pandoc $opts"
