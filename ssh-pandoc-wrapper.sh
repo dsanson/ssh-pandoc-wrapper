@@ -14,7 +14,7 @@ fi
 opts="$@"
 
 # Get some information about the input and output files
-args=($(pandoc --dump-args $@))
+args=($(ssh "pandoc --dump-args $@"))
 
 # Information about the output
 output_file=${args[0]}
