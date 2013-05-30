@@ -30,7 +30,7 @@ All of these commands should work just as expected:
     $ pandoc foo.markdown 
     $ cat foo.markdown | pandoc
     $ pandoc foo.markdown bar.markdown -o foobar.docx
-    $ pandoc foo.markdown -t latex --numbered-sections --latex-engine xelatex
+    $ pandoc foo.markdown -t latex --numbered-sections
 
 Even
 
